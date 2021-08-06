@@ -16,6 +16,6 @@ jobs:
           gcloud_service_key: ${{ secrets.GCLOUD_SERVICE_KEY }}
           registry: gcr.io
           project_id: devops-sandbox-20200519
-          image_name: demoapp/sinnaker/simple-wepapp
+          image_name: nikhilpn-reg/sinnaker/simple-wepapp
           image_tag: ${{ steps.get_tag_name.outputs.GIT_TAG_NAME}}
           dockerfile: ./Dockerfile
