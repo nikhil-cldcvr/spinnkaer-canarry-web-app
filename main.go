@@ -31,7 +31,7 @@ func SayHello(greeting_summary *prometheus.SummaryVec) http.HandlerFunc {
 				time.Sleep(10 * time.Second)
 			}
 
-			greet := fmt.Sprintf("Hello %s version-v5\n", name)
+			greet := fmt.Sprintf("Hello %s version-v6\n", name)
 			w.Write([]byte(greet))
 		} else {
 			w.WriteHeader(code)
