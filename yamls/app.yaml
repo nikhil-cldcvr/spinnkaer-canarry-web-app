@@ -1,18 +1,27 @@
-apiVersion: v1
-kind: Service
+apiVersion: apps/v1
+kind: Deployment
 metadata:
-  creationTimestamp: null
-  labels:
-    app.kubernetes.io/managed-by: spinnaker
-    app.kubernetes.io/name: eks-app
   name: simple-web-server
+  namespace: default
 spec:
-  ports:
-  - port: 8080
-    protocol: TCP
-    targetPort: 8080
+  replicas: 5
   selector:
-    app: simple-web-server
-  type: LoadBalancer
-status:
-  loadBalancer: {}
+    matchLabels:
+      app: simple-web-server
+  template:
+    metadata:
+      annotations:
+        prometheus.io/path: /metrics
+        prometheus.io/port: '8080'
+        prometheus.io/scrape: 'true'
+      labels:
+        app: simple-web-server
+    spec:
+      containers:
+        - env:
+            - name: Release
+              value: Production
+          image: gcr.io/devops-sandbox-20200519/nikhilpn-reg/sinnaker/simple-wepapp:latest
+          name: simple-web-server
+          ports:
+            - containerPort: 8080
