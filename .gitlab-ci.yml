@@ -1,0 +1,198 @@
+image: docker:dind
+
+services:
+  - docker:dind
+
+stages:
+  - .pre
+  - build
+  - test
+  - deploy
+  - canary-deploy
+  - prod-deploy
+  - .post
+variables:
+  DOCKER_REG: "gcr.io/devops-sandbox-20200519/nikhilpn-reg/demo/nginx:${CI_COMMIT_TAG}"
+
+
+pre_build_stage:
+  stage: .pre
+  script:
+    - docker info
+    - docker login --help
+    - echo ${json_file} | docker login -u _json_key --password-stdin https://gcr.io
+  tags:
+    - demo
+  only:
+  - tags
+
+
+build-image:
+  stage: build
+  script:
+    - echo "Running docker build "
+    - docker build -t ${DOCKER_REG} .
+  tags:
+    - demo
+  only:
+  - tags
+
+
+test-image:
+  stage: test
+  script:
+    - docker rm -f testconatiner
+    - docker run -d -p 8080:80 --name testconatiner ${DOCKER_REG}
+    - sleep 10s
+    - curl -s localhost:8080 || exit 1
+    - docker rm -f testconatiner
+    - docker push ${DOCKER_REG}
+  tags:
+    - demo
+  only:
+  - tags
+
+
+deploy-canary-on-gke: 
+  stage: canary-deploy
+  script:
+    - echo "Deploying canary changes on GKE"
+    - replica_count=$(kubectl get deploy nginx-web-app-stage -n ${KUBE_NAMESPACE} -o jsonpath='{.spec.replicas}') && kubectl set image deployment/nginx-web-app-stage-canary nginx=${DOCKER_REG} -n ${KUBE_NAMESPACE} && kubectl scale deployment nginx-web-app-stage-canary --replicas=${replica_count} -n ${KUBE_NAMESPACE}
+  environment:
+    name: gke
+    url: http://nginx-web-app-production.35.200.229.203.nip.io
+    kubernetes:
+      namespace: prod
+  when: manual
+  tags:
+    - demo
+  only:
+  - tags
+
+deploy-on-gke:
+  stage: prod-deploy
+  script:
+    - echo "Deploying changes on GKE"
+    - kubectl set image deployment/nginx-web-app-stage nginx=${DOCKER_REG} -n ${KUBE_NAMESPACE} 
+  environment:
+    name: gke
+    url: http://nginx-web-app-production.35.200.229.203.nip.io
+    kubernetes:
+      namespace: prod
+  when: manual
+  tags:
+    - demo
+  only:
+  - tags
+  
+scale-down-canary-gke:
+  stage: .post
+  needs: [deploy-on-gke]
+  script:
+    - echo "Scaling down canary deployment to 0"
+    - kubectl scale deployment nginx-web-app-stage-canary --replicas=0 -n ${KUBE_NAMESPACE}
+  environment:
+    name: gke
+    url: http://nginx-web-app-production.35.200.229.203.nip.io
+    kubernetes:
+      namespace: prod
+  tags:
+    - demo
+  only:
+  - tags
+
+deploy-canary-on-eks:
+  stage: canary-deploy
+  script:
+    - echo "Deploying canary changes on EKS"
+    - replica_count=$(kubectl get deploy nginx-web-app-stage -n ${KUBE_NAMESPACE} -o jsonpath='{.spec.replicas}') && kubectl set image deployment/nginx-web-app-stage-canary nginx=${DOCKER_REG} -n ${KUBE_NAMESPACE} && kubectl scale deployment nginx-web-app-stage-canary --replicas=${replica_count} -n ${KUBE_NAMESPACE}
+  environment:
+    name: eks
+    url: http://ad88d9bf4de85403ea5240d8fec7c9b6-1180328318.ap-south-1.elb.amazonaws.com
+    kubernetes:
+      namespace: prod
+  when: manual
+  tags:
+    - demo
+  only:
+  - tags
+
+deploy-on-eks:
+  stage: prod-deploy
+  script:
+    - echo "Deploying changes on EKS"
+    - kubectl set image deployment/nginx-web-app-stage nginx=${DOCKER_REG} -n ${KUBE_NAMESPACE}
+  environment:
+    name: eks
+    url: http://ad88d9bf4de85403ea5240d8fec7c9b6-1180328318.ap-south-1.elb.amazonaws.com
+    kubernetes:
+      namespace: prod
+  when: manual
+  tags:
+    - demo
+  only:
+  - tags
+
+scale-down-canary-eks:
+  stage: .post
+  needs: [deploy-on-eks]
+  script:
+    - echo "Scaling down canary deployment to 0"
+    - kubectl scale deployment nginx-web-app-stage-canary --replicas=0 -n ${KUBE_NAMESPACE}
+  environment:
+    name: eks
+    url: http://ad88d9bf4de85403ea5240d8fec7c9b6-1180328318.ap-south-1.elb.amazonaws.com
+    kubernetes:
+      namespace: prod
+  tags:
+    - demo
+  only:
+  - tags
+
+deploy-canary-on-aks:
+  stage: canary-deploy
+  script:
+    - echo "Deploying canary changes on AKS"
+    - replica_count=$(kubectl get deploy nginx-web-app-stage -n ${KUBE_NAMESPACE} -o jsonpath='{.spec.replicas}') && kubectl set image deployment/nginx-web-app-stage-canary nginx=${DOCKER_REG} -n ${KUBE_NAMESPACE} && kubectl scale deployment nginx-web-app-stage-canary --replicas=${replica_count} -n ${KUBE_NAMESPACE}
+  environment:
+    name: aks
+    url: http://nginx-web-app-production.52.189.210.148.nip.io
+    kubernetes:
+      namespace: prod
+  when: manual
+  tags:
+    - demo
+  only:
+  - tags
+
+deploy-on-aks:
+  stage: prod-deploy
+  script:
+    - echo "Deploying changes on AKS"
+    - kubectl set image deployment/nginx-web-app-stage nginx=${DOCKER_REG} -n ${KUBE_NAMESPACE}
+  environment:
+    name: aks
+    url: http://nginx-web-app-production.52.189.210.148.nip.io
+    kubernetes:
+      namespace: prod
+  when: manual
+  tags:
+    - demo
+  only:
+  - tags
+
+scale-down-canary-aks:
+  stage: .post
+  needs: [deploy-on-aks]
+  script:
+    - echo "Scaling down canary deployment to 0"
+    - kubectl scale deployment nginx-web-app-stage-canary --replicas=0 -n ${KUBE_NAMESPACE}
+  environment:
+    name: aks
+    url: http://nginx-web-app-production.52.189.210.148.nip.io
+    kubernetes:
+      namespace: prod
+  tags:
+    - demo
+  only:
+  - tags
