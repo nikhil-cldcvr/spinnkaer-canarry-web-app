@@ -14,7 +14,7 @@ spec:
         app: nginx-web-app-production
     spec:
       containers:
-      - image: ${CICD_REGISTRY}:${CICD_GIT_TAG}
+      - image: ${CICD_IMAGE}:${CICD_GIT_TAG}
         name: nginx
 ---
 apiVersion: v1
