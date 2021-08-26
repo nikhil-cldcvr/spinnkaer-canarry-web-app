@@ -5,12 +5,8 @@ stages:
       image: nginx:stable
       shellScript: |-
         ls
-        mkdir -p /test
-        ln -s `pwd` /test
-        cd /test
-        ls
         cp index.html /usr/share/nginx/html/index.html
-        sleep 10s
+        sleep 5s
         curl -s localhost:8080 || exit 1
 - name: Publish
   steps:
