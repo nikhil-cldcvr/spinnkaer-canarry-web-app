@@ -4,6 +4,7 @@ stages:
   - runScriptConfig:
       image: nginx:stable
       shellScript: |-
+        ls
         mkdir -p /test
         ln -s `pwd` /test
         cd /test
