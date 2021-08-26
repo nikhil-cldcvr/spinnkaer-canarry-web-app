@@ -1,14 +1,14 @@
 stages:
-- name: Build
-  steps:
-  - runScriptConfig:
-      image: nginx:stable
-      shellScript: |-
-        ls
-        cp index.html /usr/share/nginx/html/index.html
-        sleep 5s
-        curl localhost:80 || exit 1
-- name: Publish
+#- name: Build
+#  steps:
+#  - runScriptConfig:
+#      image: nginx:stable
+#      shellScript: |-
+#        ls
+#        cp index.html /usr/share/nginx/html/index.html
+#        sleep 5s
+#        curl localhost:80 || exit 1
+- name: Build and Publish
   steps:
   - publishImageConfig:
       dockerfilePath: ./Dockerfile
