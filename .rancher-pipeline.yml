@@ -1,0 +1,28 @@
+stages:
+- name: Build
+  steps:
+  - runScriptConfig:
+      image: docker:dind
+      shellScript: |-
+        mkdir -p /test
+        ln -s `pwd` /test
+        cd /test
+        ls
+        docker rm -f testconatiner
+        docker build -t test:1.0 .
+        docker run -d -p 9090:80 --name testconatiner  test:1.0
+        sleep 10s
+        curl -s localhost:8080 || exit 1
+- name: Build
+  steps:
+  - publishImageConfig:
+      dockerfilePath: ./Dockerfile
+      buildContext: .
+      tag: gcr.io/devops-sandbox-20200519/nikhilpn-reg/demo/nginx:${CICD_GIT_TAG}
+      pushRemote: true
+      registry: gcr.io
+
+- name: Deploy
+  steps:
+  - applyYamlConfig:
+      path: deploy/nginx-prod.yaml
