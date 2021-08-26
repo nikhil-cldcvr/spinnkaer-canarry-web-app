@@ -16,8 +16,18 @@ stages:
       tag: gcr.io/devops-sandbox-20200519/nikhilpn-reg/demo/nginx:${CICD_GIT_TAG}
       pushRemote: true
       registry: gcr.io
+    when:
+      branch: rancher
+      event:
+        include:
+        - tag
 
 - name: Deploy
   steps:
   - applyYamlConfig:
       path: deploy/nginx-prod.yaml
+    when:
+      branch: rancher
+      event:
+        include:
+        - tag
