@@ -2,18 +2,16 @@ stages:
 - name: Build
   steps:
   - runScriptConfig:
-      image: docker:dind
+      image: nginx:stable
       shellScript: |-
         mkdir -p /test
         ln -s `pwd` /test
         cd /test
         ls
-        docker rm -f testconatiner
-        docker build -t test:1.0 .
-        docker run -d -p 9090:80 --name testconatiner  test:1.0
+        cp index.html /usr/share/nginx/html/index.html
         sleep 10s
         curl -s localhost:8080 || exit 1
-- name: Build
+- name: Publish
   steps:
   - publishImageConfig:
       dockerfilePath: ./Dockerfile
