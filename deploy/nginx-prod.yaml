@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: nginx-web-app-stage
+  namespace: default
 spec:
   replicas: 2
   selector:
@@ -20,6 +21,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: nginx-web-app-production
+  namespace: default
 spec:
   ports:
   - port: 80
