@@ -7,7 +7,7 @@ stages:
         ls
         cp index.html /usr/share/nginx/html/index.html
         sleep 5s
-        curl -s localhost:8080 || exit 1
+        curl -s localhost:80 || exit 1
 - name: Publish
   steps:
   - publishImageConfig:
