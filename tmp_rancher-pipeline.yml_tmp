@@ -1,4 +1,13 @@
 stages:
+#- name: Build
+#  steps:
+#  - runScriptConfig:
+#      image: nginx:stable
+#      shellScript: |-
+#        ls
+#        cp index.html /usr/share/nginx/html/index.html
+#        sleep 5s
+#        curl localhost:80 || exit 1
 - name: Build and Publish
   steps:
   - publishImageConfig:
@@ -8,17 +17,21 @@ stages:
       pushRemote: true
       registry: gcr.io
     when:
+#      branch: ${CICD_GIT_BRANCH}
       event:
         include:
         - tag
+
 - name: Deploy
   steps:
   - applyYamlConfig:
       path: deploy/nginx-prod.yaml
     when:
+ #     branch: ${CICD_GIT_BRANCH}
       event:
         include:
         - tag
+
 - name: PublishCatlog
   steps:
   - publishCatalogConfig:
@@ -37,6 +50,3 @@ stages:
       event:
         include:
         - tag
-branch:
-  include:
-  - rancher
