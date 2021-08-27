@@ -14,7 +14,7 @@ spec:
         app: nginx-web-app-production
     spec:
       containers:
-      - image: gcr.io/devops-sandbox-20200519/nikhilpn-reg/demo/nginx:v1
+      - image: gcr.io/devops-sandbox-20200519/nikhilpn-reg/demo/nginx:v2
         name: nginx
 ---
 apiVersion: v1
@@ -22,6 +22,8 @@ kind: Service
 metadata:
   name: nginx-web-app-production
   namespace: default
+  labels:
+    app: nginx-web-app-production
 spec:
   ports:
   - port: 80
