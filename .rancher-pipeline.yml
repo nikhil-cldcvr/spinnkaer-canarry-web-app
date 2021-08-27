@@ -35,7 +35,7 @@ stages:
 - name: PublishCatlog
   steps:
   - publishCatalogConfig:
-      path: chart
+      path: nginx-app-chart
       catalogTemplate: nginx-web
       version: latest
       gitUrl: git@github.com:nikhil-cldcvr/spinnkaer-canarry-web-app.git
