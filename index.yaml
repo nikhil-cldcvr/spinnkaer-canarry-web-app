@@ -3,10 +3,10 @@ entries:
   nginx-app:
   - apiVersion: v2
     appVersion: "1"
-    created: "2021-08-27T12:09:56.664401+05:30"
+    created: "2021-08-27T12:25:27.112087+05:30"
     digest: 09f986f48dc8fc9fd955b9ca4fd80ac07ee2c9f3d758127a9ac5ebd4fbc88ada
     name: nginx-app
     urls:
-    - https://github.com/nikhil-cldcvr/spinnkaer-canarry-web-app/tree/rancher/chart/nginx-app-0.2.0.tgz
+    - https://github.com/nikhil-cldcvr/spinnkaer-canarry-web-app/nginx-app-0.2.0.tgz
     version: 0.2.0
-generated: "2021-08-27T12:09:56.661476+05:30"
+generated: "2021-08-27T12:25:27.110886+05:30"
