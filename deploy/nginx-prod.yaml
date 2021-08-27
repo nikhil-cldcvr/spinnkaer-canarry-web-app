@@ -22,6 +22,8 @@ kind: Service
 metadata:
   name: nginx-web-app-production
   namespace: default
+  labels:
+    app: nginx-web-app-production
 spec:
   ports:
   - port: 80
