@@ -14,7 +14,7 @@ spec:
         app: nginx-web-app-production
     spec:
       containers:
-      - image: gcr.io/devops-sandbox-20200519/nikhilpn-reg/demo/nginx:v2
+      - image: gcr.io/devops-sandbox-20200519/nikhilpn-reg/demo/nginx:v3
         name: nginx
 ---
 apiVersion: v1
